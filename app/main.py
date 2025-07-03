@@ -29,6 +29,24 @@ app.add_middleware(
 )
 
 
+
+from alembic.config import Config
+from alembic import command
+import os
+
+def run_migrations():
+    alembic_cfg = Config(os.path.join(os.path.dirname(__file__), "..", "alembic.ini"))
+    command.upgrade(alembic_cfg, "head")
+
+@app.on_event("startup")
+def startup_event():
+    run_migrations()
+
+
+
+if os.getenv("RUN_MIGRATIONS") == "true":
+    run_migrations()
+
 # try:
 #     conn=psycopg2.connect(host='localhost',database='fastapi',user='postgres',password='aman1', cursor_factory=RealDictCursor)
 #     cursor=conn.cursor();
